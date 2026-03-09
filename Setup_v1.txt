@@ -22,10 +22,10 @@ Go to Tools > Port and select the port your Arduino is plugged into (it often sa
 Click the Upload button (the right-pointing arrow in the top left corner). Wait a few seconds for the bottom console to say "Done uploading."
 Shit is now burned on the IDE
 
-SETUP SERVER VIA NODEJS:
+SETUP SERVER VIA NODEJS (All of this must be done in WSL):
 
 Install the packages you need. Do this command in terminal: cd arduino-sensor-server
-Run npm install express cors serialport (this install the packages needed to run the server and get info from the arduino over your USB)
+Run: npm install express cors serialport (this install the packages needed to run the server and get info from the arduino over your USB)
 Line 12 might have an issue where your port name is wrong. if it gives error You can check your Arduino IDE (Tools > Port) to find the exact name.
 Now check that you are in your arduino-sensor-server
 Run this command in terminal: node server.js
