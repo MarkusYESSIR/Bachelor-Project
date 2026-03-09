@@ -1,0 +1,33 @@
+How to set up the current version of the system:
+
+Make sure you have the latest version of NodeJS LTS installed.
+Make sure you have the arduino IDE installed.
+
+SETUP CODE ON THE ARDUINO:
+
+To setup your arduino for use do the following:
+
+Part 1:
+Download the arduino IDE:
+Open the sketch_test/sketch_test.ino in the IDE
+Go to Sketch > Include Library > Manage Libraries...
+In the search bar, type 'DHT sensor library'.
+Look for the one authored by Adafruit and click Install.
+If it asks to install missing dependencies (like the Adafruit Unified Sensor library), click Install All.
+
+Part 2:
+Make sure your Arduino is connected to your pc via USB
+Go to Tools > Board and select your Arduino model (e.g., Arduino Uno).
+Go to Tools > Port and select the port your Arduino is plugged into (it often says "Arduino Uno" next to it).
+Click the Upload button (the right-pointing arrow in the top left corner). Wait a few seconds for the bottom console to say "Done uploading."
+Shit is now burned on the IDE
+
+SETUP SERVER VIA NODEJS:
+
+Install the packages you need. Do this command in terminal: cd arduino-sensor-server
+Run npm install express cors serialport (this install the packages needed to run the server and get info from the arduino over your USB)
+Line 12 might have an issue where your port name is wrong. if it gives error You can check your Arduino IDE (Tools > Port) to find the exact name.
+Now check that you are in your arduino-sensor-server
+Run this command in terminal: node server.js
+
+
