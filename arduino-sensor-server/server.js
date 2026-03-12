@@ -8,7 +8,7 @@ app.use(cors()); // Allows React to fetch data from this server
 
 // --- IMPORTANT: UPDATE YOUR PORT NAME ---
 // Windows is usually 'COM3', 'COM4', etc.
-// Mac/Linux is usually '/dev/tty.usbmodem...' or '/dev/ttyUSB0'
+// Mac/Linux is usually '/dev/tty.usbmodem...' or '/dev/ttyUSB0' or 'sum fucked shit idk check'
 const portName = '/dev/ttyACM0'; 
 
 // Connect to the Arduino
