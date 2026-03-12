@@ -22,12 +22,25 @@ Go to Tools > Port and select the port your Arduino is plugged into (it often sa
 Click the Upload button (the right-pointing arrow in the top left corner). Wait a few seconds for the bottom console to say "Done uploading."
 Shit is now burned on the IDE
 
-SETUP SERVER VIA NODEJS (All of this must be done in WSL):
+SETUP SERVER VIA NODEJS:
 
-Install the packages you need. Do this command in terminal: cd arduino-sensor-server
+Install the packages you need. Use the cd command to navigate into the folder Bachelor-project/arduino-sensor-server/
 Run: npm install express cors serialport (this install the packages needed to run the server and get info from the arduino over your USB)
-Line 12 might have an issue where your port name is wrong. if it gives error You can check your Arduino IDE (Tools > Port) to find the exact name.
+Line 12 might have an issue where your port name is wrong. if it gives error You can check your Arduino IDE (Tools > Port) to find the exact name. (In Windows it will prob be 'COM3' or smth)
 Now check that you are in your arduino-sensor-server
 Run this command in terminal: node server.js
+If you close the terminal then you will execute the process e.g. closing the node server, so only do that if you're done running the program.
+
+OPEN THE DASHBOARD REACT WEBSITE:
+
+Open a new terminal/powershell window
+Usee the cd command to navigate into the folder: Bachelor-project/arduino-weather/
+
+IMPORTANT:
+If it is the first time you're setting the system up you will need to run the following command in the Bachelor-project/arduino-weather/ folder: npm install
+
+Once you're in the Bachelor-project/arduino-weather/ folder, run the following command: npm run dev
+This will give you an adress in your terminal along the lines of: http://localhost/insert a random port.
+copy this into your webbrowser and it will open the dashboard website.
 
 
