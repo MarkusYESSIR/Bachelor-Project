@@ -32,11 +32,11 @@ void loop() {
   float tempC = dht.readTemperature();
 
   // Check if any reads failed and exit early (to try again)
-  if (isnan(humidity) || isnan(tempC) {
+  if (isnan(humidity) || isnan(tempC)) {
     Serial.println("Failed to read from DHT sensor!");
     return;
   }
-)
+
  // Print the results as a JSON string
   Serial.print("{\"humidity\": ");
   Serial.print(humidity);
