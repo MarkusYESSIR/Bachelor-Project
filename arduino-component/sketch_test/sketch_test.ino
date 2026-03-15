@@ -36,6 +36,7 @@ void loop() {
     Serial.println("Failed to read from DHT sensor!");
     return;
   }
+)
  // Print the results as a JSON string
   Serial.print("{\"humidity\": ");
   Serial.print(humidity);
