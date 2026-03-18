@@ -16,7 +16,7 @@ const port = new SerialPort({ path: portName, baudRate: 9600 });
 const parser = port.pipe(new ReadlineParser({ delimiter: '\r\n' }));
 
 // We will store the latest reading here
-let latestData = { humidity: null, temperature: null };
+let latestData = { humidity: null, temperature: null, rawGasValue: null, correctedGasValue: null };
 
 // Listen for incoming data from the Arduino
 parser.on('data', (data) => {

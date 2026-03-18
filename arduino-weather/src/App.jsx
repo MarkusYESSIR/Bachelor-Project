@@ -63,7 +63,7 @@ function App() {
       <h1>Air Quality Dashboard</h1>
       <div style={styles.cardContainer}>
         
-        {/* We use our custom component 3 times, passing in the specific props */}
+        {/* We use our custom components passings props into them */}
         <SensorCard 
           label="Temperature" 
           value={sensorData.temperature} 
@@ -75,8 +75,13 @@ function App() {
           unit="%" 
         />
         <SensorCard 
-          label="Gas Level" 
-          value={sensorData.gas} 
+          label="Raw Gas Value" 
+          value={sensorData.rawGasValue} 
+          unit="ppm" 
+        />
+        <SensorCard 
+          label="Corrected Gas Value" 
+          value={sensorData.correctedGasValue} 
           unit="ppm" 
         />
 
