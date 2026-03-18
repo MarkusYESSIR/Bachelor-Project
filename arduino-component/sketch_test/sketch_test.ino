@@ -30,15 +30,13 @@ void loop() {
   
   // Read temperature as Celsius
   float tempC = dht.readTemperature();
-  
-  // Read temperature as Fahrenheit
-  float tempF = dht.readTemperature(true);
 
   // Check if any reads failed and exit early (to try again)
-  if (isnan(humidity) || isnan(tempC) || isnan(tempF)) {
+  if (isnan(humidity) || isnan(tempC)) {
     Serial.println("Failed to read from DHT sensor!");
     return;
   }
+
  // Print the results as a JSON string
   Serial.print("{\"humidity\": ");
   Serial.print(humidity);
