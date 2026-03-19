@@ -7,8 +7,7 @@ SETUP CODE ON THE ARDUINO:
 
 To setup your arduino for use do the following:
 
-Part 1:
-Download the arduino IDE:
+Download the arduino IDE
 Download the project from out github
 In the Arduino IDE open the arduino-component folder, from the project.
 
