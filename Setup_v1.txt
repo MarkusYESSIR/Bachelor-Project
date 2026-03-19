@@ -20,7 +20,7 @@ Shit is now burned on the IDE
 SETUP SERVER VIA NODEJS:
 
 Install the packages you need. Use the cd command to navigate into the folder Bachelor-project/arduino-sensor-server/
-Run: npm install express cors serialport (this install the packages needed to run the server and get info from the arduino over your USB)
+Run: npm ci (this install the packages needed to run the server and get info from the arduino over your USB)
 Line 12 might have an issue where your port name is wrong. if it gives error You can check your Arduino IDE (Tools > Port) to find the exact name. (In Windows it will prob be 'COM3' or smth)
 Now check that you are in your arduino-sensor-server
 Run this command in terminal: node server.js
