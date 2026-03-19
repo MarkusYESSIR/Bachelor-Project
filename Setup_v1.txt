@@ -9,16 +9,12 @@ To setup your arduino for use do the following:
 
 Part 1:
 Download the arduino IDE:
-Open the sketch_test/sketch_test.ino in the IDE
-Go to Sketch > Include Library > Manage Libraries...
-In the search bar, type 'DHT sensor library'.
-Look for the one authored by Adafruit and click Install.
-If it asks to install missing dependencies (like the Adafruit Unified Sensor library), click Install All.
+Download the project from out github
+In the Arduino IDE open the arduino-component folder, from the project.
 
-Part 2:
 Make sure your Arduino is connected to your pc via USB
-Go to Tools > Board and select your Arduino model (e.g., Arduino Uno).
-Go to Tools > Port and select the port your Arduino is plugged into (it often says "Arduino Uno" next to it).
+Go to Tools > Board and select your Arduino model (e.g. Arduino Uno Wifi R2).
+Go to Tools > Port and select the port your Arduino is plugged into (It will say Arduino... next to it.)
 Click the Upload button (the right-pointing arrow in the top left corner). Wait a few seconds for the bottom console to say "Done uploading."
 Shit is now burned on the IDE
 
@@ -37,10 +33,10 @@ Open a new terminal/powershell window
 Usee the cd command to navigate into the folder: Bachelor-project/arduino-weather/
 
 IMPORTANT:
-If it is the first time you're setting the system up you will need to run the following command in the Bachelor-project/arduino-weather/ folder: npm install
+If it is the first time you're setting the system up you will need to run the following command in the Bachelor-project/arduino-weather/ folder: npm ci.
 
 Once you're in the Bachelor-project/arduino-weather/ folder, run the following command: npm run dev
-This will give you an adress in your terminal along the lines of: http://localhost/insert a random port.
-copy this into your webbrowser and it will open the dashboard website.
+This will give you an adress in your terminal along the lines of: http://localhost/{PORT}.
+Copy this into your webbrowser and it will open the dashboard website.
 
 
