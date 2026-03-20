@@ -25,7 +25,7 @@ void setup() {
 
   // Start the dht11 sensor
   dht.begin();
-
+  delay(180000); 
 }
 
 void loop() {
