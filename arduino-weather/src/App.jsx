@@ -2,45 +2,45 @@ import { useState, useEffect } from 'react';
 import SensorCard from './components/SensorCard';
 
 function App() {
-  // Set up state to hold all three sensor readings
+
   const [sensorData, setSensorData] = useState({ 
     temperature: null, 
     humidity: null, 
-    gas: null 
+    rawGasValue: null,
+    correctedGasValue: null 
   });
 
   useEffect(() => {
-    // Function to fetch data from our Node.js server
-    const fetchSensorData = async () => {
-      try {
-        const response = await fetch('http://localhost:3001/api/sensor');
-        const data = await response.json();
-        
-        // Update the state with the new data
-        if (data.temperature !== undefined) {
-          setSensorData(data);
-        }
-      } catch (error) {
-        console.error("Error fetching sensor data:", error);
-      }
-    };
 
-    // Fetch immediately on load, then set an interval for every 2 seconds
-    fetchSensorData();
-    const interval = setInterval(fetchSensorData, 2000);
+    /*
+    const fetchSensorData = async () => { ... }
+    */
+
+    // --- MOCK DATA GENERATOR ---
+    // This simulates the backend sending us a new reading every 2 seconds
+    const interval = setInterval(() => {
+      setSensorData({
+        // Generate a random temperature between 20.0 and 25.0
+        temperature: (20 + Math.random() * 5).toFixed(1), 
+        // Generate random humidity between 40.0 and 50.0
+        humidity: (40 + Math.random() * 10).toFixed(1),   
+        // Generate random gas values
+        rawGasValue: Math.floor(300 + Math.random() * 50),
+        correctedGasValue: Math.floor(310 + Math.random() * 50)
+      });
+    }, 2000);
 
     // Cleanup the interval when the component unmounts
     return () => clearInterval(interval);
   }, []);
 
-  // Basic styling for the main layout container
+
   const styles = {
     container: { 
-      // Add Flexbox to force perfect centering
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      width: '100%', // Tell it to take up the entire screen width
+      width: '100%', 
       marginTop: '50px', 
       fontFamily: 'system-ui, sans-serif', 
       padding: '0 20px',
@@ -53,7 +53,7 @@ function App() {
       flexWrap: 'wrap', 
       marginTop: '20px', 
       maxWidth: '800px', 
-      width: '100%' // Ensure the cards can spread out
+      width: '100%' 
     }
   };
 
