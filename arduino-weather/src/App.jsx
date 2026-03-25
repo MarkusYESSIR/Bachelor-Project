@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import mqtt from 'mqtt';
 import SensorCard from './components/SensorCard';
 
 function App() {
@@ -12,28 +13,28 @@ function App() {
 
   useEffect(() => {
 
-    /*
-    const fetchSensorData = async () => { ... }
-    */
+  const brokerUrl = 'ws://51.20.131.161:9001';
+  const client = mqtt.connect(brokerUrl);
 
-    // --- MOCK DATA GENERATOR ---
-    // This simulates the backend sending us a new reading every 2 seconds
-    const interval = setInterval(() => {
-      setSensorData({
-        // Generate a random temperature between 20.0 and 25.0
-        temperature: (20 + Math.random() * 5).toFixed(1), 
-        // Generate random humidity between 40.0 and 50.0
-        humidity: (40 + Math.random() * 10).toFixed(1),   
-        // Generate random gas values
-        rawGasValue: Math.floor(300 + Math.random() * 50),
-        correctedGasValue: Math.floor(310 + Math.random() * 50)
-      });
-    }, 2000);
+  client.on('connect', () => {console.log('Connected to MQTT Broker');
+  client.subscribe('bachelor-project/sensors');  
+  });
 
-    // Cleanup the interval when the component unmounts
-    return () => clearInterval(interval);
+  client.on('message', (topic, message) => {
+  try {
+    const data = JSON.parse(message.toString());
+    console.log('Reading recieved', data);
+    setSensorData(data);}
+    catch (error) {console.error('Error parsing MQTT message:', error);}
+  });
+
+  // Cleanup on unmount. LOWK CHECK DET HER TOG DET FRA STACKOVERFLOW FATTER DET IKKE HELT
+    return () => {
+      if (client) {
+        client.end();
+      }
+    };
   }, []);
-
 
   const styles = {
     container: { 
