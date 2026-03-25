@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-// Import your custom component from the new components folder!
 import SensorCard from './components/SensorCard';
 
 function App() {
@@ -61,9 +60,9 @@ function App() {
   return (
     <div style={styles.container}>
       <h1>Air Quality Dashboard</h1>
+      <hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
       <div style={styles.cardContainer}>
         
-        {/* We use our custom components passings props into them */}
         <SensorCard 
           label="Temperature" 
           value={sensorData.temperature} 
