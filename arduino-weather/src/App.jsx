@@ -4,12 +4,8 @@ import SensorCard from './components/SensorCard';
 
 function App() {
 
-  const [sensorData, setSensorData] = useState({ 
-    temperature: null, 
-    humidity: null, 
-    rawGasValue: null,
-    correctedGasValue: null 
-  });
+  const [sensorData1, setSensorData1] = useState(null);
+  const [sensorData2, setSensorData2] = useState(null);
 
   useEffect(() => {
 
@@ -17,14 +13,21 @@ function App() {
   const client = mqtt.connect(brokerUrl);
 
   client.on('connect', () => {console.log('Connected to MQTT Broker');
-  client.subscribe('bachelor-project/sensors');  
+  client.subscribe('bachelor-project/sensors/#');  //Subscribe to all topics under bachelor-project/sensors (/# means all subtopics mqtt bs)
   });
 
   client.on('message', (topic, message) => {
   try {
     const data = JSON.parse(message.toString());
-    console.log('Reading recieved', data);
-    setSensorData(data);}
+
+    //Sort into the right sheit / bucket
+    if (topic === 'bachelor-project/sensors/1') {
+          setSensor1(data);
+        }
+    else if (topic === 'bachelor-project/sensors/2') {
+          setSensor2(data);
+        }
+  }
     catch (error) {console.error('Error parsing MQTT message:', error);}
   });
 
@@ -36,6 +39,23 @@ function App() {
     };
   }, []);
 
+
+  //Function to calculate the avg of the 2 sensors. If 1 of them is null, it will return the other one. If both are null, it will return null.
+const getAverage = (key) => { 
+if (sensorData1 && sensorData2) {
+  return ((sensorData1[key] + sensorData2[key]) / 2).toFixed(1); //Calculate the average and round to 1 decimals
+}
+  else if (sensorData1) {
+    return sensorData1[key].toFixed(1); //Return the value from sensor 1 if sensor 2 is null
+  }
+  else if (sensorData2) {
+    return sensorData2[key].toFixed(1); //Return the value from sensor 2 if sensor 1 is null
+  }
+  else {
+    return null; //Return null if both sensors are null
+  };
+
+};
   const styles = {
     container: { 
       display: 'flex',
@@ -66,22 +86,22 @@ function App() {
         
         <SensorCard 
           label="Temperature" 
-          value={sensorData.temperature} 
+          value={getAverage('temperature')} 
           unit="°C" 
         />
         <SensorCard 
           label="Humidity" 
-          value={sensorData.humidity} 
+          value={getAverage('humidity')} 
           unit="%" 
         />
         <SensorCard 
           label="Raw Gas Value" 
-          value={sensorData.rawGasValue} 
+          value={getAverage('rawGasValue')} 
           unit="ppm" 
         />
         <SensorCard 
           label="Corrected Gas Value" 
-          value={sensorData.correctedGasValue} 
+          value={getAverage('correctedGasValue')} 
           unit="ppm" 
         />
 
