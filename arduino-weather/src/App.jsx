@@ -1,47 +1,67 @@
 import { useState, useEffect } from 'react';
-// Import your custom component from the new components folder!
+import mqtt from 'mqtt';
 import SensorCard from './components/SensorCard';
 
 function App() {
-  // Set up state to hold all three sensor readings
-  const [sensorData, setSensorData] = useState({ 
-    temperature: null, 
-    humidity: null, 
-    gas: null 
-  });
+
+  const [sensorData1, setSensorData1] = useState(null);
+  const [sensorData2, setSensorData2] = useState(null);
 
   useEffect(() => {
-    // Function to fetch data from our Node.js server
-    const fetchSensorData = async () => {
-      try {
-        const response = await fetch('http://localhost:3001/api/sensor');
-        const data = await response.json();
-        
-        // Update the state with the new data
-        if (data.temperature !== undefined) {
-          setSensorData(data);
+
+  const brokerUrl = 'ws://51.20.131.161:9001';
+  const client = mqtt.connect(brokerUrl);
+
+  client.on('connect', () => {console.log('Connected to MQTT Broker');
+  client.subscribe('bachelor-project/sensors/#');  //Subscribe to all topics under bachelor-project/sensors (/# means all subtopics mqtt bs)
+  });
+
+  client.on('message', (topic, message) => {
+  try {
+    const data = JSON.parse(message.toString());
+
+    //Sort into the right sheit / bucket
+    if (topic === 'bachelor-project/sensors/1') {
+          setSensor1(data);
         }
-      } catch (error) {
-        console.error("Error fetching sensor data:", error);
+    else if (topic === 'bachelor-project/sensors/2') {
+          setSensor2(data);
+        }
+  }
+    catch (error) {console.error('Error parsing MQTT message:', error);}
+  });
+
+  // Cleanup on unmount. LOWK CHECK DET HER TOG DET FRA STACKOVERFLOW FATTER DET IKKE HELT
+    return () => {
+      if (client) {
+        client.end();
       }
     };
-
-    // Fetch immediately on load, then set an interval for every 2 seconds
-    fetchSensorData();
-    const interval = setInterval(fetchSensorData, 2000);
-
-    // Cleanup the interval when the component unmounts
-    return () => clearInterval(interval);
   }, []);
 
-  // Basic styling for the main layout container
+
+  //Function to calculate the avg of the 2 sensors. If 1 of them is null, it will return the other one. If both are null, it will return null.
+const getAverage = (key) => { 
+if (sensorData1 && sensorData2) {
+  return ((sensorData1[key] + sensorData2[key]) / 2).toFixed(1); //Calculate the average and round to 1 decimals
+}
+  else if (sensorData1) {
+    return sensorData1[key].toFixed(1); //Return the value from sensor 1 if sensor 2 is null
+  }
+  else if (sensorData2) {
+    return sensorData2[key].toFixed(1); //Return the value from sensor 2 if sensor 1 is null
+  }
+  else {
+    return null; //Return null if both sensors are null
+  };
+
+};
   const styles = {
     container: { 
-      // Add Flexbox to force perfect centering
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      width: '100%', // Tell it to take up the entire screen width
+      width: '100%', 
       marginTop: '50px', 
       fontFamily: 'system-ui, sans-serif', 
       padding: '0 20px',
@@ -54,34 +74,34 @@ function App() {
       flexWrap: 'wrap', 
       marginTop: '20px', 
       maxWidth: '800px', 
-      width: '100%' // Ensure the cards can spread out
+      width: '100%' 
     }
   };
 
   return (
     <div style={styles.container}>
       <h1>Air Quality Dashboard</h1>
+      <hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
       <div style={styles.cardContainer}>
         
-        {/* We use our custom components passings props into them */}
         <SensorCard 
           label="Temperature" 
-          value={sensorData.temperature} 
+          value={getAverage('temperature')} 
           unit="°C" 
         />
         <SensorCard 
           label="Humidity" 
-          value={sensorData.humidity} 
+          value={getAverage('humidity')} 
           unit="%" 
         />
         <SensorCard 
           label="Raw Gas Value" 
-          value={sensorData.rawGasValue} 
+          value={getAverage('rawGasValue')} 
           unit="ppm" 
         />
         <SensorCard 
           label="Corrected Gas Value" 
-          value={sensorData.correctedGasValue} 
+          value={getAverage('correctedGasValue')} 
           unit="ppm" 
         />
 
