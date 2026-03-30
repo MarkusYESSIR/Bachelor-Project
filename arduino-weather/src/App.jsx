@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import mqtt from 'mqtt';
 import SensorCard from './components/SensorCard';
+import Dashboard from './components/Dashboard';
 
 function App() {
 
@@ -92,6 +93,11 @@ if (sensorData1 && sensorData2) {
       <hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
       <div style={styles.cardContainer}>
         
+        <Dashboard />
+         
+
+
+
         <SensorCard 
           label="Temperature" 
           value={getAverage('temperature')} 
