@@ -107,7 +107,7 @@ if (client.connect("UnoWifiClient-#", mqtt_user, mqtt_pass)) {
   int rawGasValue = analogRead(PIN_MQ135);
 
   /* Get the corrected gas value based on the current temperature and humidity
-   in line 19 we created the gasSensor object and linked it to the correct pin for the MQ135 sensor (A0)
+   in line 36 we created the gasSensor object and linked it to the correct pin for the MQ135 sensor (A0)
    The function getCorrectedGas takes the raw gas value, temperature, and humidity as inputs
    and returns a corrected gas value that accounts for the influence of temperature and humidity on the sensor's readings.
    This function comes with the MQ135 library. This is because the MQ135 can only meassure gas not specific types*/
