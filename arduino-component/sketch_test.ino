@@ -13,7 +13,7 @@ const char password[] = "Network Password";
 const char = mqttServer = "51.20.131.161";
 const int mqttPort = 8883;
 const char mqtt_user[] = "sensor_node";
-const char mqtt_pass[] = "bachelorproject2026";
+const char mqtt_pass[] = "bachelorproject2026"; //might be thesis2026 but not sure yet, will update if needed
 
 
 // ---------------------The sensor setup: ----------------------
@@ -31,6 +31,7 @@ const char mqtt_pass[] = "bachelorproject2026";
 DHT dht(DHTPIN, DHTTYPE);
 
 // We link the gasSensor object to the correct pin for the MQ135 sensor (A0)
+// this must be updated with baseline meassurement and resitande of 10kOhm.
 MQ135 gasSensor = MQ135(PIN_MQ135);
 
 //-------------  Secure client setup for MQTT: ----------------
