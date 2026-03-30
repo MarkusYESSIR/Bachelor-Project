@@ -9,8 +9,16 @@ function App() {
 
   useEffect(() => {
 
+  const connectionOptions = {
+    username: 'sensor_node', 
+    password: 'bachelorproject2026'
+  };
+    
   const brokerUrl = 'ws://51.20.131.161:9001';
-  const client = mqtt.connect(brokerUrl);
+  const client = mqtt.connect(brokerUrl, connectionOptions);
+  client.on('error', (err) => {
+    console.error('MQTT error: ', err);
+  });
 
   client.on('connect', () => {console.log('Connected to MQTT Broker');
   client.subscribe('bachelor-project/sensors/#');  //Subscribe to all topics under bachelor-project/sensors (/# means all subtopics mqtt bs)
@@ -20,13 +28,13 @@ function App() {
   try {
     const data = JSON.parse(message.toString());
 
-    //Sort into the right sheit / bucket
-    if (topic === 'bachelor-project/sensors/1') {
-          setSensor1(data);
-        }
-    else if (topic === 'bachelor-project/sensors/2') {
-          setSensor2(data);
-        }
+   // Sort into the right sheit / bucket
+if (topic === 'bachelor-project/sensors/1') {
+    setSensorData1(data);  // <--- Must be setSensorData1
+}
+else if (topic === 'bachelor-project/sensors/2') {
+    setSensorData2(data);  // <--- Must be setSensorData2
+}
   }
     catch (error) {console.error('Error parsing MQTT message:', error);}
   });
