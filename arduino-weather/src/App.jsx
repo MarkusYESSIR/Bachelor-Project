@@ -10,6 +10,7 @@ function App() {
 
   useEffect(() => {
 //FIIIIIIIIIIIIXXXXXXXXXXXXXX!!!!!!!!!!!!!!!!!!!
+// (This is where our .env security fix will go eventually!)
   const connectionOptions = {
     username: 'sensor_node', 
     password: 'bachelorproject2026'
@@ -63,8 +64,19 @@ if (sensorData1 && sensorData2) {
   else {
     return null; //Return null if both sensors are null
   };
-
 };
+
+// --- NEW: Assemble the data package for the Dashboard charts ---
+  let averagedSensorPackage = null;
+  if (sensorData1 || sensorData2) {
+    averagedSensorPackage = {
+      // parseFloat converts the string from .toFixed(1) back into a safe number for Chart.js
+      temperature: parseFloat(getAverage('temperature')),
+      correctedGasValue: parseFloat(getAverage('correctedGasValue')),
+      humidity: parseFloat(getAverage('humidity')),
+    };
+  }
+
   const styles = {
     container: { 
       display: 'flex',
@@ -93,9 +105,6 @@ if (sensorData1 && sensorData2) {
       <hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
       <div style={styles.cardContainer}>
         
-        <Dashboard />
-         
-
 
 
         <SensorCard 
