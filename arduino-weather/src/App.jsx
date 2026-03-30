@@ -92,11 +92,6 @@ if (sensorData1 && sensorData2) {
       <h1>Air Quality Dashboard</h1>
       <hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
       <div style={styles.cardContainer}>
-        
-        <Dashboard />
-         
-
-
 
         <SensorCard 
           label="Temperature" 

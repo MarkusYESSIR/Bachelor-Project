@@ -32,6 +32,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
 // We link the gasSensor object to the correct pin for the MQ135 sensor (A0)
 // this must be updated with baseline meassurement and resitande of 10kOhm.
+// for sensor 1 baseline is 109.67 and for sensor 2 baseline is #
 MQ135 gasSensor = MQ135(PIN_MQ135);
 
 //-------------  Secure client setup for MQTT: ----------------
