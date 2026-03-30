@@ -8,7 +8,7 @@ function App() {
   const [sensorData2, setSensorData2] = useState(null);
 
   useEffect(() => {
-
+//FIIIIIIIIIIIIXXXXXXXXXXXXXX!!!!!!!!!!!!!!!!!!!
   const connectionOptions = {
     username: 'sensor_node', 
     password: 'bachelorproject2026'
