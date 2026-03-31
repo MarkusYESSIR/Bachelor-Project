@@ -11,107 +11,85 @@ import { Line } from "react-chartjs-2";
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Legend);
 
-const [history, setHistory] = useState([]);
+// 1. Accept 'sensorData' as a prop from App.jsx
+function Dashboard({ sensorData }) {
+  const [history, setHistory] = useState([]);
 
-function Dashboard() {
-  const [temperature, setTemperature] = useState(null);
-  const [co2, setCo2] = useState(null);
-  const [humidity, setHumidity] = useState(null);
-
+  // 2. Automatically update the graph history whenever new MQTT data arrives
   useEffect(() => {
-    const fetchData = () => {
-      fetch()//vores backend url
-        .then((res) => res.json())
-        .then((data) => {
-          setTemperature(data.temperature);
-          setCo2(data.co2);
-          setHumidity(data.humidity);
+    if (sensorData) {
+      setHistory((prev) => {
+        const newPoint = {
+          time: new Date().toLocaleTimeString(),
+          temperature: sensorData.temperature,
+          co2: sensorData.correctedGasValue, 
+          humidity: sensorData.humidity,
+        };
+        // Keep only the last 20 dots so the browser doesn't crash over time
+        return [...prev, newPoint].slice(-20);
+      });
+    }
+  }, [sensorData]);
 
-          setHistory((prev) => [
-            ...prev,
-            {
-              time: new Date().toLocaleTimeString(),
-              temperature: data.temperature,
-              co2: data.co2,
-              humidity: data.humidity,
-            },
-          ]);
-        });
-    };
-
-    fetchData(); //første load
-    const interval = setInterval(fetchData, 5000); //hvert 5 sekundt
-
-    return () => clearInterval(interval);
-  }, []);
+  // 3. chartData is safely in the main function scope!
+  const chartData = {
+    labels: history.map((item) => item.time),
+    datasets: [
+      {
+        label: "Temperature (°C)",
+        data: history.map((item) => item.temperature),
+        borderColor: "red",
+        fill: false,
+      },
+      {
+        label: "CO₂ (ppm)",
+        data: history.map((item) => item.co2),
+        borderColor: "blue",
+        fill: false,
+      },
+      {
+        label: "Humidity (%)",
+        data: history.map((item) => item.humidity),
+        borderColor: "green",
+        fill: false,
+      },
+    ],
+  };
 
   return (
     <div style={styles.container}>
-      <h1>Dashboard</h1>
-
-      <div style={styles.grid}>
-        {/* Temperature */}
-        <div style={styles.card}>
-          <h2>Temperature</h2>
-          <p>{temperature !== null ? `${temperature} °C` : "Loading..."} </p>
-        </div>
-
-        {/* CO2 */}
-        <div style={styles.card}>
-          <h2>CO₂</h2>
-          <p>{co2 !== null ? `${co2} ppm` : "Loading..."}</p>
-        </div>
-
-        {/* Humidity */}
-        <div style={styles.card}>
-          <h2>Humidity</h2>
-          <p>{humidity !== null ? `${humidity} %` : "Loading..."}</p>
-        </div>
-
-        {/* Graph */}
-        <div style={{ marginTop: "40px" }}>
-          <h2>Sensor Graph</h2>
-          <Line data={chartData} />
-        </div>
+      {/* Wrapped the chart in the new chartCard style */}
+      <div style={styles.chartCard}>
+        <h2 style={styles.chartTitle}>Live Sensor Graph</h2>
+        <Line data={chartData} />
       </div>
     </div>
   );
 }
 
-const chartData = {
-  labels: history.map((item) => item.time),
-  datasets: [
-    {
-      label: "Temeprature (°C)",
-      data: history.map((item) => item.temperature),
-      borderColor: "red",
-      fill: false,
-    },
-    {
-      label: "CO₂ (ppm)",
-      data: history.map((item) => item.co2),
-      borderColor: "blue",
-      fill: false,
-    },
-    {
-      label: "Humidity (%)",
-      data: history.map((item) => item.humidity),
-      borderColor: "green",
-      fill: false,
-    },
-  ],
-};
-
 const styles = {
-  container: { padding: "20px" },
-  grid: { display: "flex", gap: "20px" },
-  card: {
-    background: "#f5f5f5",
-    padding: "20px",
-    borderRadius: "10px",
-    width: "200px",
-    textAlign: "center",
+  container: { 
+    width: "100%", 
+    maxWidth: "800px",
+    margin: "0 auto" 
   },
+  chartCard: {
+    backgroundColor: "#ffffff", // Makes the box solid white like the sensor cards
+    borderRadius: "12px",       // Rounds the corners
+    padding: "24px",            // Gives the chart breathing room away from the edges
+    marginTop: "20px",          // Spaces it out from the row of cards above it
+    boxShadow: "0 2px 4px rgba(0,0,0,0.05)" // A very subtle shadow to match floating cards
+  },
+  chartTitle: {
+    color: "#6b7280",           // A nice professional grey to match your card labels
+    fontSize: "14px",
+    textTransform: "uppercase", // MATCHES the "TEMPERATURE" style font
+    letterSpacing: "1px",
+    marginTop: "0",
+    marginBottom: "20px",
+    fontWeight: "600",
+    fontFamily: "system-ui, sans-serif"
+  }
 };
 
 export default Dashboard;

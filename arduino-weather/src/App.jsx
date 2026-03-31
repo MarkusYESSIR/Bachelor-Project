@@ -16,6 +16,7 @@ function App() {
     password: 'bachelorproject2026'
   };
     
+  // We use websockets for constant connection to the MQTT broker, and we subscribe to the topic where our sensors publish their data. We also set up error handling and a cleanup function to disconnect when the component unmounts.
   const brokerUrl = 'ws://51.20.131.161:9001';
   const client = mqtt.connect(brokerUrl, connectionOptions);
   client.on('error', (err) => {
@@ -105,8 +106,11 @@ if (sensorData1 && sensorData2) {
       <hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
       <div style={styles.cardContainer}>
         
-
-
+{/* --- NEW: The Live Graph --- */}
+      <div style={{ width: '100%', maxWidth: '800px', marginTop: '20px' }}>
+         <Dashboard sensorData={averagedSensorPackage} />
+      </div>
+<hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
         <SensorCard 
           label="Temperature" 
           value={getAverage('temperature')} 
@@ -118,12 +122,7 @@ if (sensorData1 && sensorData2) {
           unit="%" 
         />
         <SensorCard 
-          label="Raw Gas Value" 
-          value={getAverage('rawGasValue')} 
-          unit="ppm" 
-        />
-        <SensorCard 
-          label="Corrected Gas Value" 
+          label="CO2" 
           value={getAverage('correctedGasValue')} 
           unit="ppm" 
         />
