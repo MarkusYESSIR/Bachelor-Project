@@ -110,23 +110,7 @@ if (sensorData1 && sensorData2) {
       <div style={{ width: '100%', maxWidth: '800px', marginTop: '20px' }}>
          <Dashboard sensorData={averagedSensorPackage} />
       </div>
-<hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
-        <SensorCard 
-          label="Temperature" 
-          value={getAverage('temperature')} 
-          unit="°C" 
-        />
-        <SensorCard 
-          label="Humidity" 
-          value={getAverage('humidity')} 
-          unit="%" 
-        />
-        <SensorCard 
-          label="CO2" 
-          value={getAverage('correctedGasValue')} 
-          unit="ppm" 
-        />
-
+       
       </div>
     </div>
   );
