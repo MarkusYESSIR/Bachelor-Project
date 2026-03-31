@@ -10,7 +10,7 @@ const char password[] = "Network Password";
 
 
 //-------------------- MQTT settinfs:------------------------
-const char = mqttServer = "51.20.131.161";
+const char* mqttServer = "51.20.131.161";
 const int mqttPort = 8883;
 const char mqtt_user[] = "sensor_node";
 const char mqtt_pass[] = "bachelorproject2026"; //might be thesis2026 but not sure yet, will update if needed
@@ -36,7 +36,7 @@ DHT dht(DHTPIN, DHTTYPE);
 MQ135 gasSensor = MQ135(PIN_MQ135);
 
 //-------------  Secure client setup for MQTT: ----------------
-WifiSSLClient sslClient;
+WiFiSSLClient sslClient;
 PubSubClient client(sslClient);
 
 
@@ -48,19 +48,19 @@ void setup() {
   dht.begin();
 
   //Establish wifi connection
-  serial.print("Connecting to WiFi...");
-  serial.println(ssid);
+  Serial.print("Connecting to WiFi...");
+  Serial.println(ssid);
   while (WiFi.begin(ssid, password) != WL_CONNECTED) {
     delay(5000);
     Serial.print(".");
   }
- serial.println("Connected to WiFi");
+  Serial.println("Connected to WiFi");
 
 
  //Tell the MQTT client where to send data to. 
- client.setServer(mqtt_server, mqtt_port);
+ client.setServer(mqttServer, mqttPort);
 
-serial.println("Warming up theMQ135 sensor for 3 minutes...");
+  Serial.println("Warming up theMQ135 sensor for 3 minutes...");
   delay(180000); 
 }
 
@@ -72,12 +72,12 @@ void loop() {
 //----------Establish connection to EC2 server----------
  // Check if we are connected to the MQTT broker. If not, connect securely!
  if (!client.connected()) {
-  serial.println("Trying to connect to  encrypted MQTT broker...");
+  Serial.println("Trying to connect to  encrypted MQTT broker...");
 // Connect using the secure port AND the username/password
 //IMPORTANT: # MUST BE CHANGED TO EITHER 1 OR 2 DEPENDING ON WHICH SENSOR WE ARE USING. BOTH MUST NOT BE THE SAME!!!!!!!!!!!!!!!!!!!
 if (client.connect("UnoWifiClient-#", mqtt_user, mqtt_pass)) {
   Serial.println("Connected to MQTT broker securely!");
- } else { serial.print("Failed to connect to MQTT broker. Will retry in 10 secinds");
+ } else { Serial.print("Failed to connect to MQTT broker. Will retry in 10 secinds");
   return;
  }
 }
@@ -102,10 +102,6 @@ if (client.connect("UnoWifiClient-#", mqtt_user, mqtt_pass)) {
     tempC = 22.0;
     humidity = 40.0;
   }
-
-  // Read the air quality from the MQ135 sensor
-  int rawGasValue = analogRead(PIN_MQ135);
-
   /* Get the corrected gas value based on the current temperature and humidity
    in line 36 we created the gasSensor object and linked it to the correct pin for the MQ135 sensor (A0)
    The function getCorrectedGas takes the raw gas value, temperature, and humidity as inputs
@@ -113,10 +109,9 @@ if (client.connect("UnoWifiClient-#", mqtt_user, mqtt_pass)) {
    This function comes with the MQ135 library. This is because the MQ135 can only meassure gas not specific types*/
   float correctedGasValue = gasSensor.getCorrectedPPM(tempC, humidity);
 
-  if (isnan(rawGasValue) || isnan(correctedGasValue)) {
+  if (isnan(correctedGasValue)) {
     Serial.println("{\"warning\": \"Failed to read MQ135. Using default gas values.\"}");
     
-    rawGasValue = 0;
     correctedGasValue = 0;
   }
 
@@ -126,8 +121,6 @@ if (client.connect("UnoWifiClient-#", mqtt_user, mqtt_pass)) {
   payload += humidity;
   payload += ", \"temperature\": ";
   payload += tempC;
-  payload += ", \"rawGasValue\": ";
-  payload += rawGasValue;
   payload += ", \"correctedGasValue\": ";
   payload += correctedGasValue;
   payload += "}";
