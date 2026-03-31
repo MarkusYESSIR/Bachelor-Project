@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+
+  import { useState, useEffect } from 'react';
 import mqtt from 'mqtt';
 import SensorCard from './components/SensorCard';
 import Dashboard from './components/Dashboard';
@@ -8,16 +9,21 @@ function App() {
   const [sensorData1, setSensorData1] = useState(null);
   const [sensorData2, setSensorData2] = useState(null);
 
+
   useEffect(() => {
+
 //FIIIIIIIIIIIIXXXXXXXXXXXXXX!!!!!!!!!!!!!!!!!!!
 // (This is where our .env security fix will go eventually!)
   const connectionOptions = {
-    username: 'sensor_node', 
-    password: 'bachelorproject2026'
+// For testing, let's try WITHOUT username/pass first since we set allow_anonymous true
+      username: 'frontend_user', 
+      password: 'hemmelig123',
+     
+      rejectUnauthorized: false, // Essential for non-standard ports
   };
     
   // We use websockets for constant connection to the MQTT broker, and we subscribe to the topic where our sensors publish their data. We also set up error handling and a cleanup function to disconnect when the component unmounts.
-  const brokerUrl = 'ws://51.20.131.161:9001';
+  const brokerUrl = 'wss://indoor-climate-measure.duckdns.org:9001'; 
   const client = mqtt.connect(brokerUrl, connectionOptions);
   client.on('error', (err) => {
     console.error('MQTT error: ', err);
@@ -49,7 +55,6 @@ else if (topic === 'bachelor-project/sensors/2') {
       }
     };
   }, []);
-
 
   //Function to calculate the avg of the 2 sensors. If 1 of them is null, it will return the other one. If both are null, it will return null.
 const getAverage = (key) => { 
