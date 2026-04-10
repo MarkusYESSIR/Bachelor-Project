@@ -19,7 +19,6 @@ function App() {
       username: 'frontend_user', 
       password: 'hemmelig123',
      
-      rejectUnauthorized: false, // Essential for non-standard ports
   };
     
   // We use websockets for constant connection to the MQTT broker, and we subscribe to the topic where our sensors publish their data. We also set up error handling and a cleanup function to disconnect when the component unmounts.
@@ -111,7 +110,7 @@ if (sensorData1 && sensorData2) {
       <hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
       <div style={styles.cardContainer}>
         
-{/* --- NEW: The Live Graph --- */}
+    // The graph with the temp cards. 
       <div style={{ width: '100%', maxWidth: '800px', marginTop: '20px' }}>
          <Dashboard sensorData={averagedSensorPackage} />
       </div>
