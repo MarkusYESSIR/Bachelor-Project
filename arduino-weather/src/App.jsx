@@ -18,11 +18,10 @@ function App() {
 // For testing, let's try WITHOUT username/pass first since we set allow_anonymous true
       username: 'frontend_user', 
       password: 'hemmelig123',
-     
   };
     
   // We use websockets for constant connection to the MQTT broker, and we subscribe to the topic where our sensors publish their data. We also set up error handling and a cleanup function to disconnect when the component unmounts.
-  const brokerUrl = 'wss://indoor-climate-measure.duckdns.org:9001'; 
+  const brokerUrl = 'ws://indoor-climate-measure.duckdns.org:9001'; 
   const client = mqtt.connect(brokerUrl, connectionOptions);
   client.on('error', (err) => {
     console.error('MQTT error: ', err);
