@@ -1,5 +1,5 @@
 
-  import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import mqtt from 'mqtt';
 import SensorCard from './components/SensorCard';
 import Dashboard from './components/Dashboard';
@@ -21,8 +21,8 @@ function App() {
   };
     
   // We use websockets for constant connection to the MQTT broker, and we subscribe to the topic where our sensors publish their data. We also set up error handling and a cleanup function to disconnect when the component unmounts.
-  const brokerUrl = 'ws://indoor-climate-measure.duckdns.org:9001'; 
-  const client = mqtt.connect(brokerUrl, connectionOptions);
+   const brokerUrl = 'wss://indoor-climate-measure.duckdns.org:9001/mqtt'; 
+   const client = mqtt.connect(brokerUrl, connectionOptions);
   client.on('error', (err) => {
     console.error('MQTT error: ', err);
   });
@@ -109,7 +109,7 @@ if (sensorData1 && sensorData2) {
       <hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
       <div style={styles.cardContainer}>
         
-    // The graph with the cards. 
+    //The graph with the cards. 
       <div style={{ width: '100%', maxWidth: '800px', marginTop: '20px' }}>
          <Dashboard sensorData={averagedSensorPackage} />
       </div>
