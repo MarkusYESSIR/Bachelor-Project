@@ -106,7 +106,6 @@ if (sensorData1 && sensorData2) {
       <hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
       <div style={styles.cardContainer}>
         
-    //The graph with the cards. 
       <div style={{ width: '100%', maxWidth: '800px', marginTop: '20px' }}>
          <Dashboard sensorData={averagedSensorPackage} />
       </div>

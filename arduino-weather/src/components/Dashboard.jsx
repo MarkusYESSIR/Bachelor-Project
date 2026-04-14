@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import SensorGraph from "./SensorGraph"; // Import your new Graph component
-import SensorCard from "./SensorCard";   // Import your existing Card component
+import SensorGraph from "./SensorGraph"; // Import Graph component
+import SensorCard from "./SensorCard";   // Import Card component
 
 function Dashboard({ sensorData }) {
   const [history, setHistory] = useState([]);
@@ -21,7 +21,7 @@ function Dashboard({ sensorData }) {
     }
   }, [sensorData]);
 
-  // Safely extract current values for the cards
+  // Current values for the cards
   const currentTemp = sensorData?.temperature ?? "--";
   const currentHumidity = sensorData?.humidity ?? "--";
   const currentCo2 = sensorData?.correctedGasValue ?? "--";
