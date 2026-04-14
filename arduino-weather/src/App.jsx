@@ -10,48 +10,27 @@ function App() {
   const [sensorData2, setSensorData2] = useState(null);
 
 
-  useEffect(() => {
-
-//FIIIIIIIIIIIIXXXXXXXXXXXXXX!!!!!!!!!!!!!!!!!!!
-// (This is where our .env security fix will go eventually!)
-  const connectionOptions = {
-// For testing, let's try WITHOUT username/pass first since we set allow_anonymous true
-      username: 'frontend_user', 
-      password: 'hemmelig123',
-  };
-    
-  // We use websockets for constant connection to the MQTT broker, and we subscribe to the topic where our sensors publish their data. We also set up error handling and a cleanup function to disconnect when the component unmounts.
-   const brokerUrl = 'wss://indoor-climate-measure.duckdns.org:9001/mqtt'; 
-   const client = mqtt.connect(brokerUrl, connectionOptions);
-  client.on('error', (err) => {
-    console.error('MQTT error: ', err);
-  });
-
-  client.on('connect', () => {console.log('Connected to MQTT Broker');
-  client.subscribe('bachelor-project/sensors/#');  //Subscribe to all topics under bachelor-project/sensors (/# means all subtopics mqtt bs)
-  });
-
-  client.on('message', (topic, message) => {
-  try {
-    const data = JSON.parse(message.toString());
-
-   // Sort into the right sheit / bucket
-if (topic === 'bachelor-project/sensors/1') {
-    setSensorData1(data);  // <--- Must be setSensorData1
-}
-else if (topic === 'bachelor-project/sensors/2') {
-    setSensorData2(data);  // <--- Must be setSensorData2
-}
-  }
-    catch (error) {console.error('Error parsing MQTT message:', error);}
-  });
-
-  // Cleanup on unmount. LOWK CHECK DET HER TOG DET FRA STACKOVERFLOW FATTER DET IKKE HELT
-    return () => {
-      if (client) {
-        client.end();
+ useEffect(() => {
+    const fetchSensorData = async () => {
+      try {
+        // We are back to HTTPS and your secure DuckDNS domain!
+        const response = await fetch('https://indoor-climate-measure.duckdns.org/api/sensors'); 
+        
+        if (!response.ok) throw new Error("API not answering");
+        
+        const data = await response.json();
+        
+        if (data.sensor1) setSensorData1(data.sensor1);
+        if (data.sensor2) setSensorData2(data.sensor2);
+        
+      } catch (error) {
+        console.error('Error fetching sensor data:', error);
       }
     };
+
+    fetchSensorData();
+    const intervalId = setInterval(fetchSensorData, 2000);
+    return () => clearInterval(intervalId);
   }, []);
 
   //Function to calculate the avg of the 2 sensors. If 1 of them is null, it will return the other one. If both are null, it will return null.
