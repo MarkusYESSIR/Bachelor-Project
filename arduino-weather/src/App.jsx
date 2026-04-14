@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import mqtt from 'mqtt';
 import SensorCard from './components/SensorCard';
@@ -8,48 +9,29 @@ function App() {
   const [sensorData1, setSensorData1] = useState(null);
   const [sensorData2, setSensorData2] = useState(null);
 
-  useEffect(() => {
-//FIIIIIIIIIIIIXXXXXXXXXXXXXX!!!!!!!!!!!!!!!!!!!
-// (This is where our .env security fix will go eventually!)
-  const connectionOptions = {
-    username: 'sensor_node', 
-    password: 'bachelorproject2026'
-  };
-    
-  // We use websockets for constant connection to the MQTT broker, and we subscribe to the topic where our sensors publish their data. We also set up error handling and a cleanup function to disconnect when the component unmounts.
-  const brokerUrl = 'ws://51.20.131.161:9001';
-  const client = mqtt.connect(brokerUrl, connectionOptions);
-  client.on('error', (err) => {
-    console.error('MQTT error: ', err);
-  });
 
-  client.on('connect', () => {console.log('Connected to MQTT Broker');
-  client.subscribe('bachelor-project/sensors/#');  //Subscribe to all topics under bachelor-project/sensors (/# means all subtopics mqtt bs)
-  });
-
-  client.on('message', (topic, message) => {
-  try {
-    const data = JSON.parse(message.toString());
-
-   // Sort into the right sheit / bucket
-if (topic === 'bachelor-project/sensors/1') {
-    setSensorData1(data);  // <--- Must be setSensorData1
-}
-else if (topic === 'bachelor-project/sensors/2') {
-    setSensorData2(data);  // <--- Must be setSensorData2
-}
-  }
-    catch (error) {console.error('Error parsing MQTT message:', error);}
-  });
-
-  // Cleanup on unmount. LOWK CHECK DET HER TOG DET FRA STACKOVERFLOW FATTER DET IKKE HELT
-    return () => {
-      if (client) {
-        client.end();
+ useEffect(() => {
+    const fetchSensorData = async () => {
+      try {
+        // We are back to HTTPS and your secure DuckDNS domain!
+        const response = await fetch('https://indoor-climate-measure.duckdns.org/api/sensors'); 
+        
+        if (!response.ok) throw new Error("API not answering");
+        
+        const data = await response.json();
+        
+        if (data.sensor1) setSensorData1(data.sensor1);
+        if (data.sensor2) setSensorData2(data.sensor2);
+        
+      } catch (error) {
+        console.error('Error fetching sensor data:', error);
       }
     };
-  }, []);
 
+    fetchSensorData();
+    const intervalId = setInterval(fetchSensorData, 2000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   //Function to calculate the avg of the 2 sensors. If 1 of them is null, it will return the other one. If both are null, it will return null.
 const getAverage = (key) => { 
@@ -106,7 +88,7 @@ if (sensorData1 && sensorData2) {
       <hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
       <div style={styles.cardContainer}>
         
-{/* --- NEW: The Live Graph --- */}
+    //The graph with the cards. 
       <div style={{ width: '100%', maxWidth: '800px', marginTop: '20px' }}>
          <Dashboard sensorData={averagedSensorPackage} />
       </div>
