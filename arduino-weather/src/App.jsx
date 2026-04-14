@@ -11,15 +11,13 @@ function App() {
 
  useEffect(() => {
 
-//FIIIIIIIIIIIIXXXXXXXXXXXXXX!!!!!!!!!!!!!!!!!!!
 // (This is where our .env security fix will go eventually!)
   const connectionOptions = {
-// For testing, let's try WITHOUT username/pass first since we set allow_anonymous true
       username: 'frontend_user', 
       password: 'hemmelig123',
   };
     
-  // We use websockets for constant connection to the MQTT broker, and we subscribe to the topic where our sensors publish their data. We also set up error handling and a cleanup function to disconnect when the component unmounts.
+//Using websockets
    const brokerUrl = 'wss://indoor-climate-measure.duckdns.org:9001/mqtt'; 
    const client = mqtt.connect(brokerUrl, connectionOptions);
   client.on('error', (err) => {
@@ -45,7 +43,7 @@ else if (topic === 'bachelor-project/sensors/2') {
     catch (error) {console.error('Error parsing MQTT message:', error);}
   });
 
-  // Cleanup on unmount. LOWK CHECK DET HER TOG DET FRA STACKOVERFLOW FATTER DET IKKE HELT
+  // Cleanup on unmount.
     return () => {
       if (client) {
         client.end();
