@@ -13,7 +13,7 @@ function App() {
  useEffect(() => {
     const fetchSensorData = async () => {
       try {
-        // We are back to HTTPS and your secure DuckDNS domain!
+        
         const response = await fetch('https://indoor-climate-measure.duckdns.org/api/sensors'); 
         
         if (!response.ok) throw new Error("API not answering");
