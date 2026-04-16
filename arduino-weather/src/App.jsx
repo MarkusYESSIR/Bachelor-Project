@@ -9,28 +9,46 @@ function App() {
   const [sensorData1, setSensorData1] = useState(null);
   const [sensorData2, setSensorData2] = useState(null);
 
-
  useEffect(() => {
-    const fetchSensorData = async () => {
-      try {
-        // We are back to HTTPS and your secure DuckDNS domain!
-        const response = await fetch('https://indoor-climate-measure.duckdns.org/api/sensors'); 
-        
-        if (!response.ok) throw new Error("API not answering");
-        
-        const data = await response.json();
-        
-        if (data.sensor1) setSensorData1(data.sensor1);
-        if (data.sensor2) setSensorData2(data.sensor2);
-        
-      } catch (error) {
-        console.error('Error fetching sensor data:', error);
+
+  const connectionOptions = {
+      username: 'frontend_user', 
+      password: 'hemmelig123',
+      protocol: 'wss',
+      clientid: 'react-client-' + Math.random().toString(16).substring(2, 10)
+  };
+    
+   const brokerUrl = 'wss://indoor-climate-measure.duckdns.org:9001/mqtt'; 
+   const client = mqtt.connect(brokerUrl, connectionOptions);
+   client.on('error', (err) => {
+    console.error('MQTT error: ', err);
+  });
+
+  client.on('connect', () => {console.log('Connected to MQTT Broker');
+  client.subscribe('bachelor-project/sensors/#');  //Subscribe to all topics under bachelor-project/sensors (/# means all subtopics mqtt bs)
+  });
+
+  client.on('message', (topic, message) => {
+  try {
+    const data = JSON.parse(message.toString());
+
+   // Sort into the right sheit / bucket
+if (topic === 'bachelor-project/sensors/1') {
+    setSensorData1(data);  // <--- Must be setSensorData1
+}
+else if (topic === 'bachelor-project/sensors/2') {
+    setSensorData2(data);  // <--- Must be setSensorData2
+}
+  }
+    catch (error) {console.error('Error parsing MQTT message:', error);}
+  });
+
+  // Cleanup on unmount.
+    return () => {
+      if (client) {
+        client.end();
       }
     };
-
-    fetchSensorData();
-    const intervalId = setInterval(fetchSensorData, 2000);
-    return () => clearInterval(intervalId);
   }, []);
 
   //Function to calculate the avg of the 2 sensors. If 1 of them is null, it will return the other one. If both are null, it will return null.
@@ -88,7 +106,6 @@ if (sensorData1 && sensorData2) {
       <hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
       <div style={styles.cardContainer}>
         
-    //The graph with the cards. 
       <div style={{ width: '100%', maxWidth: '800px', marginTop: '20px' }}>
          <Dashboard sensorData={averagedSensorPackage} />
       </div>
