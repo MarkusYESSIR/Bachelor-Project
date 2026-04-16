@@ -1,7 +1,5 @@
-
 import { useState, useEffect } from 'react';
 import mqtt from 'mqtt';
-import SensorCard from './components/SensorCard';
 import Dashboard from './components/Dashboard';
 
 function App() {
