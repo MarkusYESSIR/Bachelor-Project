@@ -11,16 +11,16 @@ function App() {
 
  useEffect(() => {
 
-// (This is where our .env security fix will go eventually!)
   const connectionOptions = {
       username: 'frontend_user', 
       password: 'hemmelig123',
+      protocol: 'wss',
+      clientid: 'react-client-' + Math.random().toString(16).substring(2, 10)
   };
     
-//Using websockets
    const brokerUrl = 'wss://indoor-climate-measure.duckdns.org:9001/mqtt'; 
    const client = mqtt.connect(brokerUrl, connectionOptions);
-  client.on('error', (err) => {
+   client.on('error', (err) => {
     console.error('MQTT error: ', err);
   });
 
