@@ -35,5 +35,5 @@ function SensorCard({ label, value, unit, alertMessage }) {
     </div>
   );
 }
-
+// This line allows other files to import this function!
 export default SensorCard;
