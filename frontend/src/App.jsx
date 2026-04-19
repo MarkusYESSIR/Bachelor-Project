@@ -7,41 +7,44 @@ function App() {
   const [sensorData1, setSensorData1] = useState(null);
   const [sensorData2, setSensorData2] = useState(null);
 
- useEffect(() => {
-
-  const connectionOptions = {
+  // --- 1. MQTT Connection Logic ---
+  useEffect(() => {
+    const connectionOptions = {
       username: 'frontend_user', 
       password: 'hemmelig123',
       protocol: 'wss',
       clientid: 'react-client-' + Math.random().toString(16).substring(2, 10)
-  };
+    };
     
-   const brokerUrl = 'wss://indoor-climate-measure.duckdns.org:9001/mqtt'; 
-   const client = mqtt.connect(brokerUrl, connectionOptions);
-   client.on('error', (err) => {
-    console.error('MQTT error: ', err);
-  });
+    const brokerUrl = 'wss://indoor-climate-measure.duckdns.org:9001/mqtt'; 
+    const client = mqtt.connect(brokerUrl, connectionOptions);
+    
+    client.on('error', (err) => {
+      console.error('MQTT error: ', err);
+    });
 
-  client.on('connect', () => {console.log('Connected to MQTT Broker');
-  client.subscribe('bachelor-project/sensors/#');  //Subscribe to all topics under bachelor-project/sensors (/# means all subtopics mqtt bs)
-  });
+    client.on('connect', () => {
+      console.log('Connected to MQTT Broker');
+      client.subscribe('bachelor-project/sensors/#');  
+    });
 
-  client.on('message', (topic, message) => {
-  try {
-    const data = JSON.parse(message.toString());
+    client.on('message', (topic, message) => {
+      try {
+        const data = JSON.parse(message.toString());
 
-   // Sort into the right sheit / bucket
-if (topic === 'bachelor-project/sensors/1') {
-    setSensorData1(data);  // <--- Must be setSensorData1
-}
-else if (topic === 'bachelor-project/sensors/2') {
-    setSensorData2(data);  // <--- Must be setSensorData2
-}
-  }
-    catch (error) {console.error('Error parsing MQTT message:', error);}
-  });
+        // Sort into the right bucket
+        if (topic === 'bachelor-project/sensors/1') {
+            setSensorData1(data);  
+        }
+        else if (topic === 'bachelor-project/sensors/2') {
+            setSensorData2(data);  
+        }
+      } catch (error) {
+        console.error('Error parsing MQTT message:', error);
+      }
+    });
 
-  // Cleanup on unmount.
+    // Cleanup on unmount
     return () => {
       if (client) {
         client.end();
@@ -49,27 +52,47 @@ else if (topic === 'bachelor-project/sensors/2') {
     };
   }, []);
 
-  //Function to calculate the avg of the 2 sensors. If 1 of them is null, it will return the other one. If both are null, it will return null.
-const getAverage = (key) => { 
-if (sensorData1 && sensorData2) {
-  return ((sensorData1[key] + sensorData2[key]) / 2).toFixed(1); //Calculate the average and round to 1 decimals
-}
-  else if (sensorData1) {
-    return sensorData1[key].toFixed(1); //Return the value from sensor 1 if sensor 2 is null
-  }
-  else if (sensorData2) {
-    return sensorData2[key].toFixed(1); //Return the value from sensor 2 if sensor 1 is null
-  }
-  else {
-    return null; //Return null if both sensors are null
-  };
-};
 
-// --- NEW: Assemble the data package for the Dashboard charts ---
+  // ====================2. API Gateway, that tracks page viisits =====================
+  useEffect(() => {
+    // IMPORTANT: Replace this with your actual API Gateway Invoke URL
+    const API_URL = 'https://qg85l35qh4.execute-api.eu-north-1.amazonaws.com/log-visit';
+
+    fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ action: 'page_view' })
+    })
+    .then(response => response.json())
+    .then(data => console.log('Successfully logged visit to AWS:', data))
+    .catch(err => console.error('Failed to log visit:', err));
+    
+  }, []); // The empty array ensures this only fires once when the user loads the page
+
+
+  // --- 3. Data Processing ---
+  // Function to calculate the avg of the 2 sensors.
+  const getAverage = (key) => { 
+    if (sensorData1 && sensorData2) {
+      return ((sensorData1[key] + sensorData2[key]) / 2).toFixed(1); 
+    }
+    else if (sensorData1) {
+      return sensorData1[key].toFixed(1); 
+    }
+    else if (sensorData2) {
+      return sensorData2[key].toFixed(1); 
+    }
+    else {
+      return null; 
+    };
+  };
+
+  // Assemble the data package for the Dashboard charts
   let averagedSensorPackage = null;
   if (sensorData1 || sensorData2) {
     averagedSensorPackage = {
-      // parseFloat converts the string from .toFixed(1) back into a safe number for Chart.js
       temperature: parseFloat(getAverage('temperature')),
       correctedGasValue: parseFloat(getAverage('correctedGasValue')),
       humidity: parseFloat(getAverage('humidity')),
@@ -103,11 +126,9 @@ if (sensorData1 && sensorData2) {
       <h1>Air Quality Dashboard</h1>
       <hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
       <div style={styles.cardContainer}>
-        
-      <div style={{ width: '100%', maxWidth: '800px', marginTop: '20px' }}>
-         <Dashboard sensorData={averagedSensorPackage} />
-      </div>
-       
+        <div style={{ width: '100%', maxWidth: '800px', marginTop: '20px' }}>
+           <Dashboard sensorData={averagedSensorPackage} />
+        </div>
       </div>
     </div>
   );
