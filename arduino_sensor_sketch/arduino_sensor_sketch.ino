@@ -11,7 +11,7 @@ const char password[] = "Network Password";
 
 //-------------------- MQTT settinfs:------------------------
 const char* mqttServer = "51.20.131.161";
-const int mqttPort = 8883;
+const int mqttPort = 1883;
 const char mqtt_user[] = "sensor_node";
 const char mqtt_pass[] = "bachelorproject2026"; //might be thesis2026 but not sure yet, will update if needed
 
@@ -36,8 +36,8 @@ DHT dht(DHTPIN, DHTTYPE);
 MQ135 gasSensor = MQ135(PIN_MQ135);
 
 //-------------  Secure client setup for MQTT: ----------------
-WiFiSSLClient sslClient;
-PubSubClient client(sslClient);
+WiFiClient wifiClient;
+PubSubClient client(wifiClient);
 
 
 void setup() {
@@ -95,12 +95,11 @@ if (client.connect("UnoWifiClient-#", mqtt_user, mqtt_pass)) {
   float tempC = dht.readTemperature();
 
 
-  // Check if any reads failed from dht11 gives an erro and then sets default values for DHT11
+  // If the DHT fails to read, print an error and STOP the loop here.
   if (isnan(humidity) || isnan(tempC)) {
-    Serial.println("{\"warning\": \"Failed to read DHT. Using default climate values for MQ135.\"}");
-    
-    tempC = 22.0;
-    humidity = 40.0;
+    Serial.println("Error: Failed to read from DHT sensor. Skipping publish.");
+    return;
+
   }
   /* Get the corrected gas value based on the current temperature and humidity
    in line 36 we created the gasSensor object and linked it to the correct pin for the MQ135 sensor (A0)
@@ -109,10 +108,10 @@ if (client.connect("UnoWifiClient-#", mqtt_user, mqtt_pass)) {
    This function comes with the MQ135 library. This is because the MQ135 can only meassure gas not specific types*/
   float correctedGasValue = gasSensor.getCorrectedPPM(tempC, humidity);
 
+  // If the MQ135 fails to read, print an error and STOP the loop here.
   if (isnan(correctedGasValue)) {
-    Serial.println("{\"warning\": \"Failed to read MQ135. Using default gas values.\"}");
-    
-    correctedGasValue = 0;
+    Serial.println("Error: Failed to read from MQ135 sensor. Skipping publish.");
+    return;
   }
 
 // --- BUILD AND SEND JSON ---
