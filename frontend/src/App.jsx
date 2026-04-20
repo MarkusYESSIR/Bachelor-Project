@@ -56,7 +56,7 @@ function App() {
   // ====================2. API Gateway, that tracks page viisits =====================
   useEffect(() => {
     // IMPORTANT: Replace this with your actual API Gateway Invoke URL
-    const API_URL = 'https://qg85l35qh4.execute-api.eu-north-1.amazonaws.com/log-visit';
+    const API_URL = 'https://0gc81hv77f.execute-api.eu-north-1.amazonaws.com/log-visit';
 
     fetch(API_URL, {
       method: 'POST',
