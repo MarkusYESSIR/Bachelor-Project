@@ -29,7 +29,7 @@ function Dashboard({ sensorData }) {
 // Helper function for the temperature alert
   const getTempAlert = (temp) => {
     if (temp === "--") return null; // Don't show alert if no data
-    if (temp >= 35) return "⚠️ Temperature is too high right now, open a window";
+    if (temp >= 25) return "⚠️ Temperature is too high right now, open a window";
     if (temp <= 15) return "❄️ Temperature is too low, close the window";
     return null;
   };
