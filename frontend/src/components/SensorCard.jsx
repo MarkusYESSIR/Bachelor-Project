@@ -1,7 +1,17 @@
+import React, { useEffect, useState } from "react";
 function SensorCard({ label, value, unit, alertMessage }) {
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  // Listen for window resize to update mobile state
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  
   const styles = {
     card: { 
-      padding: '20px 15 px', // Changed from '20px 40px' to be narrower
+      padding: isMobile ? '10px 15px' : '20px 15px',
       borderRadius: '12px', 
       boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
       backgroundColor: '#ffffff',
@@ -12,19 +22,38 @@ function SensorCard({ label, value, unit, alertMessage }) {
       flexDirection: 'column',   
       alignItems: 'center',      // This centers the label and value horizontally
       justifyContent: 'center',  // This centers them vertically if the card is tall
-      flex: '1'
+      flex: '1',
+      minHeight: isMobile ? '80px' : '120px',
     },
     // This container allows the number and alert to sit side-by-side
     contentContainer: {
       display: 'flex',
       flexDirection: 'column',   // Change from 'row' or 'baseline' to 'column' for mobile
       alignItems: 'center',      // Centers the value and alert message
-      gap: '5px',                // Reduces gap between number and alert
+      gap: isMobile ? '2px' : '5px', // Tighter gap on mobile
       textAlign: 'center'        // Ensures the text itself is centered
     },
-    valueText: { fontSize: '32px', fontWeight: 'bold', margin: '10px 0', color: '#333', textAlign: 'center' },
-    labelText: { fontSize: '16px', color: '#666', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' },
-    alertText: { fontSize: '14px', color: '#e74c3c', fontWeight: 'bold', animation: 'pulse 2s infinite', textAlign: 'center' }
+    valueText: { 
+      fontSize: isMobile ? '24px' : '32px', // Smaller font for the reading
+      fontWeight: 'bold',
+      margin: isMobile ? '2px 0' : '10px 0', // Significantly less margin on mobile
+      color: '#333',
+      textAlign: 'center' 
+    },
+    labelText: { 
+      fontSize: '16px', 
+      color: '#666', 
+      textTransform: 'uppercase', 
+      letterSpacing: '1px', 
+      textAlign: 'center'
+    },
+    alertText: { 
+      fontSize: isMobile ? '12px' : '16px', // Smaller label for the alert message
+      color: '#e74c3c', 
+      fontWeight: 'bold', 
+      animation: 'pulse 2s infinite', 
+      textAlign: 'center' 
+    },
   };
 
   const displayValue = value !== null && value !== undefined && value !== "--" ? `${value}${unit}` : '--';

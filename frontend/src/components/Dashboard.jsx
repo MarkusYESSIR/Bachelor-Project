@@ -5,7 +5,7 @@ import SensorCard from "./SensorCard";   // Import Card component
 function Dashboard({ sensorData }) {
   const [history, setHistory] = useState([]);
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768); // Simple mobile detection
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768); // Simple mobile detection
 
   // Listen for window resize to update mobile state
   useEffect(() => {
