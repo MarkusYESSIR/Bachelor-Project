@@ -125,7 +125,7 @@ function Dashboard({ sensorData }) {
           color="blue" 
         />
         <SensorCard
-        label="Corrected Gas" 
+        label="CO2" 
         value={currentCo2}
         unit="ppm" 
         alertMessage={getCo2Alert(currentCo2)} />
