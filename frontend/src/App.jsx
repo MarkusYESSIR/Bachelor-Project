@@ -53,7 +53,7 @@ function App() {
   }, []);
 
 
-  // ====================2. API Gateway, that tracks page viisits =====================
+  // ====================2. API Gateway, that tracks page visits =====================
   useEffect(() => {
     // IMPORTANT: Replace this with your actual API Gateway Invoke URL
     const API_URL = 'https://0gc81hv77f.execute-api.eu-north-1.amazonaws.com/log-visit';
@@ -122,16 +122,16 @@ function App() {
   };
 
   return (
-    <div style={styles.container}>
-      <h1>Air Quality Dashboard</h1>
-      <hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
-      <div style={styles.cardContainer}>
-        <div style={{ width: '100%', maxWidth: '800px', marginTop: '20px' }}>
-           <Dashboard sensorData={averagedSensorPackage} />
-        </div>
-      </div>
+  <div style={styles.container}>
+    <h1>Air Quality Dashboard</h1>
+    <hr style={{ width: '100%', maxWidth: '800px', marginBottom: '20px', color: '#ccc' }} />
+    
+    {/* Removed the extra cardContainer div to prevent nesting alignment issues */}
+    <div style={{ width: '100%', maxWidth: '800px' }}>
+         <Dashboard sensorData={averagedSensorPackage} />
     </div>
-  );
+  </div>
+);
 }
 
 export default App;

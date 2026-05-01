@@ -5,6 +5,16 @@ import SensorCard from "./SensorCard";   // Import Card component
 function Dashboard({ sensorData }) {
   const [history, setHistory] = useState([]);
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768); // Simple mobile detection
+
+  // Listen for window resize to update mobile state
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+
   // Automatically update the graph history whenever new MQTT data arrives
   useEffect(() => {
     if (sensorData) {
@@ -48,6 +58,29 @@ function Dashboard({ sensorData }) {
     if (co2 > 1000) return "🧠 CO₂ High: Open window for focus!";
     return null;
   };
+
+  const styles = {
+    container: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "40px",
+      width: "100%",
+      maxWidth: "800px",
+      margin: "0 auto",
+      padding: "10px 0", // Reduced horizontal padding
+      boxSizing: "border-box", // Ensure it doesn't overflow
+      alignItems: "center"
+    },
+    metricWrapper: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "10px", // Adds a nice small gap between the Graph and the Card below it
+      // IF mobile: 100% width. IF desktop: 600px width (stops the stretching)
+      width: "100%", 
+      alignItems: "stretch",
+    },
+  };
+
 
   return (
     <div style={styles.container}>
@@ -101,22 +134,5 @@ function Dashboard({ sensorData }) {
     </div>
   );
 }
-
-const styles = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "40px",
-    width: "100%",
-    maxWidth: "800px",
-    margin: "0 auto",
-    padding: "20px",
-  },
-  metricWrapper: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px", // Adds a nice small gap between the Graph and the Card below it
-  },
-};
 
 export default Dashboard;
