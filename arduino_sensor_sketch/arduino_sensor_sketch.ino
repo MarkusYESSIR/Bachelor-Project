@@ -117,17 +117,20 @@ if (client.connect(("UnoWifiClient-" + sensorID).c_str(), mqtt_user, mqtt_pass))
 
 // --- BUILD AND SEND JSON ---
   // We piece together the JSON String 
-String payload = "{";
-payload += "\"sensor_id\": \"" + sensorID + "\", "; 
-payload += "\"humidity\": " + String(humidity);
-payload += ", \"temperature\": " + String(tempC);
-payload += ", \"correctedGasValue\": " + String(correctedGasValue);
-payload += "}";
+  String payload = "{";
+  payload += "\"sensor_id\": \"" + sensorID + "\", "; 
+  payload += "\"humidity\": " + String(humidity);
+  payload += ", \"temperature\": " + String(tempC);
+  payload += ", \"correctedGasValue\": " + String(correctedGasValue);
+  payload += "}";
 
   // Print it to the Serial Monitor 
   Serial.print("Publishing to EC2: ");
   Serial.println(payload);
 
-  // Send the payload securely over Wi-Fi to your EC2 Server!
-  client.publish("bachelor-project/sensors/" + sensorID, payload.c_str());
+  // 1. Build the full topic String
+  String fullTopic = "bachelor-project/sensors/" + sensorID;
+
+  // 2. Publish using .c_str() for BOTH the topic and the payload
+  client.publish(fullTopic.c_str(), payload.c_str());
 }
