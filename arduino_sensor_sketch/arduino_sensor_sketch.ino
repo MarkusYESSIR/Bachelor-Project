@@ -5,8 +5,8 @@
 #include "MQ135.h"
 
 // ------------------------------Network credentials:--------------------
-const char ssid[] = "Network SSID";
-const char password[] = "Network Password";
+const char ssid[] = "Markus konrad";
+const char password[] = "mit12345";
 
 
 //-------------------- MQTT settinfs:------------------------
@@ -15,6 +15,8 @@ const int mqttPort = 1883;
 const char mqtt_user[] = "sensor_node";
 const char mqtt_pass[] = "bachelorproject2026"; //might be thesis2026 but not sure yet, will update if needed
 
+// Set the sensor ID here:
+String sensorID = "1";
 
 // ---------------------The sensor setup: ----------------------
 // Define the pin the DHT11 is connected to (Digital Pin 2)
@@ -33,7 +35,7 @@ DHT dht(DHTPIN, DHTTYPE);
 // We link the gasSensor object to the correct pin for the MQ135 sensor (A0)
 // this must be updated with baseline meassurement and resitande of 10kOhm.
 // for sensor 1 baseline is 109.67 and for sensor 2 baseline is 360.65
-MQ135 gasSensor = MQ135(PIN_MQ135);
+MQ135 gasSensor = MQ135(PIN_MQ135, 360, 10);
 
 //-------------  Secure client setup for MQTT: ----------------
 WiFiClient wifiClient;
@@ -74,8 +76,7 @@ void loop() {
  if (!client.connected()) {
   Serial.println("Trying to connect to  encrypted MQTT broker...");
 // Connect using the secure port AND the username/password
-//IMPORTANT: # MUST BE CHANGED TO EITHER 1 OR 2 DEPENDING ON WHICH SENSOR WE ARE USING. BOTH MUST NOT BE THE SAME!!!!!!!!!!!!!!!!!!!
-if (client.connect("UnoWifiClient-#", mqtt_user, mqtt_pass)) {
+if (client.connect(("UnoWifiClient-" + sensorID).c_str(), mqtt_user, mqtt_pass)) {
   Serial.println("Connected to MQTT broker securely!");
  } else { Serial.print("Failed to connect to MQTT broker. Will retry in 10 secinds");
   return;
@@ -116,19 +117,17 @@ if (client.connect("UnoWifiClient-#", mqtt_user, mqtt_pass)) {
 
 // --- BUILD AND SEND JSON ---
   // We piece together the JSON String 
-  String payload = "{\"humidity\": ";
-  payload += humidity;
-  payload += ", \"temperature\": ";
-  payload += tempC;
-  payload += ", \"correctedGasValue\": ";
-  payload += correctedGasValue;
-  payload += "}";
+String payload = "{";
+payload += "\"sensor_id\": \"" + sensorID + "\", "; 
+payload += "\"humidity\": " + String(humidity);
+payload += ", \"temperature\": " + String(tempC);
+payload += ", \"correctedGasValue\": " + String(correctedGasValue);
+payload += "}";
 
   // Print it to the Serial Monitor 
   Serial.print("Publishing to EC2: ");
   Serial.println(payload);
 
   // Send the payload securely over Wi-Fi to your EC2 Server!
-  //IMPORTANT: # MUST BE CHANGED TO EITHER 1 OR 2 DEPENDING ON WHICH SENSOR WE ARE USING. BOTH MUST NOT BE THE SAME!!!!!!!!!!!!!!!!!!!
-  client.publish("bachelor-project/sensors/#", payload.c_str());
+  client.publish("bachelor-project/sensors/" + sensorID, payload.c_str());
 }
