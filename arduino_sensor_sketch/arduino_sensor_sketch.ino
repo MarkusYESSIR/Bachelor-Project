@@ -96,8 +96,8 @@ if (client.connect("UnoWifiClient-#", mqtt_user, mqtt_pass)) {
 
 
   // If the DHT fails to read, print an error and STOP the loop here.
-  if (isnan(humidity) || isnan(tempC)) {
-    Serial.println("Error: Failed to read from DHT sensor. Skipping publish.");
+  if (isnan(humidity) || isnan(tempC) || tempC > 35 || tempC < 5 || humidity > 80 || humidity < 10) {
+    Serial.println("Error: Failed to read from DHT sensor or reading out of bounds. Skipping publish.");
     return;
 
   }
@@ -109,8 +109,8 @@ if (client.connect("UnoWifiClient-#", mqtt_user, mqtt_pass)) {
   float correctedGasValue = gasSensor.getCorrectedPPM(tempC, humidity);
 
   // If the MQ135 fails to read, print an error and STOP the loop here.
-  if (isnan(correctedGasValue)) {
-    Serial.println("Error: Failed to read from MQ135 sensor. Skipping publish.");
+  if (isnan(correctedGasValue) || correctedGasValue > 5000 || correctedGasValue < 200) {
+    Serial.println("Error: Failed to read from MQ135 sensor or reading our of bound. Skipping publish.");
     return;
   }
 
