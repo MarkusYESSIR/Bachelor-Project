@@ -16,7 +16,7 @@ const char mqtt_user[] = "sensor_node";
 const char mqtt_pass[] = "bachelorproject2026"; //might be thesis2026 but not sure yet, will update if needed
 
 // Set the sensor ID here:
-String sensorID = "1";
+String sensorID = "2";
 
 // ---------------------The sensor setup: ----------------------
 // Define the pin the DHT11 is connected to (Digital Pin 2)
