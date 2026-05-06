@@ -1,5 +1,6 @@
 #include <SPI.h>
 #include <WiFiNINA.h>
+#include <ArduinoBearSSL.h>
 #include <PubSubClient.h>
 #include "DHT.h"
 #include "MQ135.h"
@@ -11,12 +12,26 @@ const char password[] = "mit12345";
 
 //-------------------- MQTT settinfs:------------------------
 const char* mqttServer = "51.20.131.161";
-const int mqttPort = 1883;
+const int mqttPort = 8883;
 const char mqtt_user[] = "sensor_node";
 const char mqtt_pass[] = "bachelorproject2026"; //might be thesis2026 but not sure yet, will update if needed
 
 // Set the sensor ID here:
 String sensorID = "2";
+
+
+//-------------Certificates for mTLS with out broker: --------------
+const char broker_ca_cert[] = R"(
+
+)";
+
+const char client_cert[] = R"(
+
+)";
+
+const char client_key[] = R"(
+
+)";
 
 // ---------------------The sensor setup: ----------------------
 // Define the pin the DHT11 is connected to (Digital Pin 2)
@@ -39,7 +54,12 @@ MQ135 gasSensor = MQ135(PIN_MQ135, 360, 10);
 
 //-------------  Secure client setup for MQTT: ----------------
 WiFiClient wifiClient;
-PubSubClient client(wifiClient);
+BearSSLClient sslClient(wificlient);
+PubSubClient client(sslClient);
+
+unsigned long getTime() {
+  return Wifi.getTime();
+}
 
 
 void setup() {
@@ -58,6 +78,15 @@ void setup() {
   }
   Serial.println("Connected to WiFi");
 
+  //Sync time for mTLS
+  Serial.println("Syncing time for the mTLS validation");
+  ArduinoBearSSL.onGetTime(getTime);
+
+  //configure bearSSL for mTLS
+  sslClient.setTrustAnchors(broker_ca_cert); //Validate broker
+
+  sslClient.setClientECCert(client_cert, client_key);
+
 
  //Tell the MQTT client where to send data to. 
  client.setServer(mqttServer, mqttPort);
@@ -75,17 +104,21 @@ void loop() {
  // Check if we are connected to the MQTT broker. If not, connect securely!
  if (!client.connected()) {
   Serial.println("Trying to connect to  encrypted MQTT broker...");
+
+
 // Connect using the secure port AND the username/password
 if (client.connect(("UnoWifiClient-" + sensorID).c_str(), mqtt_user, mqtt_pass)) {
   Serial.println("Connected to MQTT broker securely!");
- } else { Serial.print("Failed to connect to MQTT broker. Will retry in 10 secinds");
-  return;
- }
+ } else { 
+      Serial.print("Failed to connect to MQTT broker. State: ");
+      Serial.println(client.state());
+      Serial.println("Will retry in 10 seconds.");
+      return;
+    }
 }
 
 // Keep the server connection alive
   client.loop();
-
 
 
 //----------Sensor readings ----------------
