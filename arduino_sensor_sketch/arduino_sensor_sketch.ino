@@ -54,9 +54,8 @@ void loop() {
   if (!client.connected()) {
     Serial.println("Connecting to local Raspberry Pi Gateway...");
     
-    // No password needed for local gateway bridging (unless you set one up on the Pi)
-    if (client.connect(("UnoNode-" + sensorID).c_str())) {
-      Serial.println("Connected to local Gateway!");
+    // Set user and password for each arduino here!!!
+    if (client.connect(("UnoNode-" + sensorID).c_str(), "sensor_node_2", "your_local_password")) {      Serial.println("Connected to local Gateway!");
     } else { 
       Serial.print("Failed to connect. State: ");
       Serial.println(client.state());
