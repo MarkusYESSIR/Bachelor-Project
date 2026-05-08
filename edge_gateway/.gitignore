@@ -1,5 +1,5 @@
 # Virtual Environment
-.venv/
+venv/
 env/
 
 # Security - NEVER upload certificates or keys!

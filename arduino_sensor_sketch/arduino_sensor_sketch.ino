@@ -5,16 +5,16 @@
 #include "MQ135.h"
 
 // ------------------------------Network credentials:--------------------
-const char ssid[] = "OnePlus 8";
-const char password[] = "m59uwjbf";
+const char ssid[] = "Markus konrad ";
+const char password[] = "mit12345";
 
 //-------------------- MQTT Local Gateway Settings:------------------------
 // IMPORTANT: This must be the local Wi-Fi IP address of your Raspberry Pi!
-const char* mqttServer = "192.168.1.X"; 
+const char* mqttServer = "172.18.206.73"; 
 const int mqttPort = 1883; // Standard, unencrypted local port
 
 // Set the sensor ID here:
-String sensorID = "2";
+String sensorID = "1";
 
 // ---------------------The sensor setup: ----------------------
 #define DHTPIN 2
@@ -50,12 +50,24 @@ void setup() {
 
 void loop() {
   delay(10000);
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.print("WiFi connection lost. Reconnecting to ");
+    Serial.print(ssid);
+    
+    // Loop until reconnected
+    while (WiFi.status() != WL_CONNECTED) {
+      WiFi.begin(ssid, password);
+      delay(5000);
+      Serial.print(".");
+    }
+    Serial.println("\nReconnected to WiFi!");
+  }
 
-  if (!client.connected()) {
+    if (!client.connected()) {
     Serial.println("Connecting to local Raspberry Pi Gateway...");
     
     // Set user and password for each arduino here!!!
-    if (client.connect(("UnoNode-" + sensorID).c_str(), "sensor_node_2", "your_local_password")) {      Serial.println("Connected to local Gateway!");
+    if (client.connect(("UnoNode-" + sensorID).c_str(), "sensor_node1", "hejsa1")) {      Serial.println("Connected to local Gateway!");
     } else { 
       Serial.print("Failed to connect. State: ");
       Serial.println(client.state());
@@ -85,7 +97,7 @@ void loop() {
   payload += "\"sensor_id\": \"" + sensorID + "\", ";
   payload += "\"humidity\": " + String(humidity);
   payload += ", \"temperature\": " + String(tempC);
-  payload += ", \"correctedGasValue\": " + String(correctedGasValue);
+  payload += ", \"correctedGasValue\": " + String(correctedGa sValue);
   payload += "}";
 
   Serial.print("Sending to Gateway: ");
@@ -94,4 +106,4 @@ void loop() {
   // Publish to a local topic
   String localTopic = "local/sensors/" + sensorID;
   client.publish(localTopic.c_str(), payload.c_str()); 
-} 
+}
