@@ -1,0 +1,13 @@
+# Virtual Environment
+.venv/
+env/
+
+# Security - NEVER upload certificates or keys!
+certs/
+*.crt
+*.key
+*.pem
+
+# Python Cache (Stops annoying hidden files from uploading)
+__pycache__/
+*.pyc
