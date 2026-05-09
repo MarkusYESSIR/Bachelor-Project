@@ -16,24 +16,13 @@ The system is broken down into three main tiers:
 
 ## 🔌 Hardware Requirements
 
-* 
 **Microcontroller:** Arduino board with Wi-Fi capabilities (using the `WiFiNINA.h` library).
-
-
-* 
+ 
 **Sensors:** * DHT11 Temperature and Humidity sensor connected to Pin 2.
 
-
 * MQ135 Gas sensor connected to analog Pin A0.
-
-
-
-
-* 
+ 
 **Gateway:** A Raspberry Pi to act as the local edge gateway.
-
-
-
 ---
 
 ## 💻 Software Components
