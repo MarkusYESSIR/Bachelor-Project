@@ -20,6 +20,15 @@ String sensorID = "1";
 #define DHTPIN 2
 #define DHTTYPE DHT11
 #define PIN_MQ135 A0
+#define BUZZER_PIN 8
+
+//Thresholds and time between beeps
+const float TEMP_ALARM_THRESHOLD = 25.0; //beeps if tempC is over 25C
+const float GAS_ALARM_THRESHOLD = 1000.0; //beeps if ppm > 1000
+const unsigned long ALARM_COOLDOWN = 30000; // so it max beeps once every 30s
+unsigned long lastAlarmTime = 0;
+bool isFirstAlarm = true;
+
 
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -33,6 +42,12 @@ PubSubClient client(wifiClient);
 void setup() {
   Serial.begin(9600);
   dht.begin();
+
+  //set to output
+  pinMode(BUZZER_PIN, OUTPUT);
+  //STARTS of low
+  digitalWrite(BUZZER_PIN, LOW);
+
 
   Serial.print("Connecting to WiFi...");
   Serial.println(ssid);
@@ -91,6 +106,16 @@ void loop() {
     Serial.println("Error: MQ135 bounds. Skipping publish.");
     return;
   }
+
+  //----------Logic for alarm:)------------------
+  // Check if valid readings exceed your defined thresholds
+  if (tempC > TEMP_ALARM_THRESHOLD || correctedGasValue > GAS_ALARM_THRESHOLD) {
+    Serial.println("ALARM: Threshold exceeded! Sounding buzzer...");
+    digitalWrite(BUZZER_PIN, HIGH); // Turn buzzer ON
+    delay(200);                     // Short beep duration
+    digitalWrite(BUZZER_PIN, LOW);  // Turn buzzer OFF
+  }
+
 
   // Construct JSON Payload
   String payload = "{"; 
